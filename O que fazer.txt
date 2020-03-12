@@ -1,0 +1,15 @@
+--O que fazer
+Pegar uma imagem, achar as barras pretas dos lados da imagem e remove-las, deixando somente a imagem
+
+--Como fazer
+Usar a biblioteca Pillow
+
+Pegar o valor do pixel na posição 0,0, 
+usar um for para comparar com o valor do próximo pixel até achar um valor diferente
+adicionando 1 a um cont_pixels toda vez que não achar o valor diferente
+
+?Como fazer com os pixels do lado direito?
+
+Pegar os tamanhos horizontais e verticais da imagem 
+Subtrair o valor de cont_pixels do tamanho horizontal
+Começar o crop da imagem a partir do valor da subtração
