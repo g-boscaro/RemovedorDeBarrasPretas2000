@@ -1,24 +1,24 @@
 #Recortador de barras pretas
 
-#Importa a biblioteca PIL
+#PIL para tratar a imagem
 from PIL import Image
+#easygui para abrir a caixa de diálogo para selecionar o arquivo
 import easygui
+#os para faciliar o tratamento de paths e extensoes
 import os
+
+from time import sleep
 
 #Funcao que pega o caminho da imagem que sera tratada e separa a extensao do arquivo
 def pegaCaminho():
     #Caminho da imagem
     #Abre uma caixa de diálogo que permite selecionar um arquivo ou mais
-    caminho = easygui.fileopenbox(multiple=False)
+    lista_caminho = easygui.fileopenbox(
+        msg = "Escolha um ou mais arquivos", 
+        filetypes = ["*.jpg", "*.png", "*.bmp"],
+        multiple = True)
 
-    img_caminho, img_ext = os.path.splitext(caminho)
-
-    return img_caminho, img_ext
-
-#Função para montagem de tupla com as coordenadas passadas no loop
-def montaTupla(larguraX,alturaY):
-    coordenadasXY = (larguraX, alturaY)
-    return coordenadasXY
+    return lista_caminho
 
 #Funcao de tratamento da imagem
 def trataImagem(imagem_tratamento):
@@ -43,7 +43,7 @@ def trataImagem(imagem_tratamento):
         #print(pix_X)
 
         #Usa a função de montar tupla para definir as coordenadas
-        coordenadas = montaTupla(pix_X,0)
+        coordenadas = (pix_X,0)
         #print(coordenadas)
 
         #Pega o valor RGB da coordenada passada que será comparada com o valor do pixel 0,0
@@ -67,16 +67,54 @@ def trataImagem(imagem_tratamento):
 #Funcao principal
 def main():
     #Importa uma imagem
-    caminho_img, exten_img = pegaCaminho()
+    lista_caminho = pegaCaminho()
     #print(caminho_img, exten_img)
 
-    #Abre a imagem
-    img_import = Image.open(caminho_img + exten_img)
+    #Condicionamento dependendo da quantidade de arquivos na lista
+    if lista_caminho == None:
+        print("Nenhum arquivo selecionado")
+        print("Encerrando...")
+        sleep(2.5)
+        exit()
+    
+    elif len(lista_caminho) > 1:
+        for arquivo in lista_caminho:
+            print("Tratando aquivo:", arquivo)
+            sleep(0.5)
 
-    imagem_tratada = trataImagem(img_import)
+            #Separa o caminho e a extensao do arquivo em duas variaveis
+            caminho_img, exten_img = os.path.splitext(arquivo)
+            #print(caminho_img)
+            #print(exten_img)
 
-    #Salva a imagem
-    imagem_tratada.save(caminho_img + "_alt" + exten_img)
+            #Abre a imagem
+            img_import = Image.open(caminho_img + exten_img)
+
+            #Trata a imagem
+            imagem_tratada = trataImagem(img_import)
+
+            #Salva a imagem
+            imagem_tratada.save(caminho_img + "_noBars" + exten_img)
+            print("Finalizado")
+            
+    else:
+        print("Tratando aquivo:", lista_caminho)
+        #Separa o caminho e a extensao do arquivo em duas variaveis
+        caminho_img, exten_img = os.path.splitext(lista_caminho[0])
+        #print(caminho_img)
+        #print(exten_img)
+
+        #Abre a imagem
+        img_import = Image.open(caminho_img + exten_img)
+
+        #Trata a imagem
+        imagem_tratada = trataImagem(img_import)
+
+        #Salva a imagem no caminho passado pelo usuario utilizando a caixa de dialogo do easygui
+        imagem_tratada.save(easygui.filesavebox(default=caminho_img + "_noBars" + exten_img))
+#        imagem_tratada.save(caminho_img + "_noBars" + exten_img)
+        
+        print("Finalizado")
 
 if __name__ == "__main__":
     main()
