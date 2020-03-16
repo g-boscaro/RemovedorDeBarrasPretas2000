@@ -13,3 +13,15 @@ adicionando 1 a um cont_pixels toda vez que não achar o valor diferente
 Pegar os tamanhos horizontais e verticais da imagem 
 Subtrair o valor de cont_pixels do tamanho horizontal
 Começar o crop da imagem a partir do valor da subtração
+
+-------------------- Interface --------------------
+-Usar a biblioteca TKinter
+-Criar um botão que abra a janela de seleção de arquivo
+-Pegar o caminho do arquivo que será alterado
+--usando o metodo tkinter.filedialog.askopenfilenames() retorna uma tupla com pelo menos um caminho de arquivo
+--Já com o metodo tkinter.filedialog.askopenfilename() seleciona APENAS um arquivo
+-Criar um campo que exibe o caminho do arquivo
+-Passar o caminho em texto para esse campo
+-Alterar o arquivo
+-Criar uma nova pasta com o nome da pasta passada anteriormente + _alt
+-Salvar o arquivo alterado na nova pasta com o nome do arquivo anterior + _alt
