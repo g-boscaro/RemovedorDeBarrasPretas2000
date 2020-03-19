@@ -15,7 +15,6 @@ def pegaCaminho():
     #Abre uma caixa de diálogo que permite selecionar um arquivo ou mais
     lista_arquivos = easygui.fileopenbox(
         msg = "Escolha um ou mais arquivos", 
-        default = "*.png",
         filetypes = ["*.jpg", "*.png", "*.bmp"],
         multiple = True)
 
@@ -100,14 +99,15 @@ def main():
     #Se nenhum arquivo, fecha o programa
     if lista_arquivos == None:
         print("Nenhum arquivo encontrado")
-        print("Encerrando...")
+        print("Encerrando programa...")
         sleep(1)
         exit()
     
+    #-----Tratamento de multiplos arquivos
     #Se mais de um arquivo, trata cada arquivo da lista
     elif len(lista_arquivos) > 1:
         print ("Foram selecionados:", len(lista_arquivos), "arquivos.")
-        #Tratando multiplos arquivos
+
         for arquivo in lista_arquivos:
             print("Tratando aquivo:", arquivo)
             sleep(0.5)
@@ -132,12 +132,22 @@ def main():
             #-----Salva a imagem
             imagem_tratada.save(novo_caminho + nome_arq + ext_arq)
             print("Arquivo processado.")
-            
+
+    #-----Tratamento para apenas um arquivo
     else:
         print("Tratando aquivo:", lista_arquivos[0])
 
-        #-----Abre a imagem
-        img_import = Image.open(lista_arquivos[0])
+        #-----Trata se o arquivo enviado é uma imagem, se sim, o abre, se não, encerra o programa
+        try:
+            img_import = Image.open(lista_arquivos[0])
+            img_import.verify()
+            #Arquivo deve ser reaberto para que o PIL consiga tratar a imagem
+            img_import = Image.open(lista_arquivos[0])
+        except:
+            print("Arquivo invalido.")
+            print("Encerrando programa...")
+            sleep(1)
+            exit()
 
         #-----Trata a imagem
         imagem_tratada = trataImagem(img_import)
