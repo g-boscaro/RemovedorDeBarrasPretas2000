@@ -13,12 +13,13 @@ from time import sleep
 def pegaCaminho():
     #Caminho da imagem
     #Abre uma caixa de diálogo que permite selecionar um arquivo ou mais
-    lista_caminho = easygui.fileopenbox(
+    lista_arquivos = easygui.fileopenbox(
         msg = "Escolha um ou mais arquivos", 
+        default = "*.png",
         filetypes = ["*.jpg", "*.png", "*.bmp"],
         multiple = True)
 
-    return lista_caminho
+    return lista_arquivos
 
 #Funcao de tratamento da imagem
 def trataImagem(imagem_tratamento):
@@ -64,57 +65,90 @@ def trataImagem(imagem_tratamento):
 
     return img_cortada
 
+#Função que cria novo diretorio, extrai nome e extensão do arquivo
+def manipulaArq(caminho):
+    #Pega o nome do diretorio
+    nome_dir = os.path.dirname(caminho)
+
+    arquivo_completo = os.path.basename(caminho)
+    nome_arquivo, extensao = os.path.splitext(arquivo_completo)
+
+    #Cria caminho com o final \No_bars
+    novo_path = nome_dir + "\\Sem_barras\\"
+    #print(novo_path)
+
+    #Verifica a existencia do novo caminho
+    check_existe = os.path.exists(novo_path)
+    #print(check_existe)
+
+    #Trata a existencia do novo caminho
+    #Se não existir cria o diretorio e retorna o caminho
+    if check_existe == False:
+        os.mkdir(novo_path)
+        return novo_path, nome_arquivo, extensao
+    #Se existir só retorna o caminho
+    else:
+        return novo_path, nome_arquivo, extensao
+
 #Funcao principal
 def main():
-    #Importa uma imagem
-    lista_caminho = pegaCaminho()
+    #-----Importa uma imagem
+    lista_arquivos = pegaCaminho()
     #print(caminho_img, exten_img)
 
-    #Condicionamento dependendo da quantidade de arquivos na lista
-    if lista_caminho == None:
-        print("Nenhum arquivo selecionado")
+    #-----Condicionamento dependendo da quantidade de arquivos na lista
+    #Se nenhum arquivo, fecha o programa
+    if lista_arquivos == None:
+        print("Nenhum arquivo encontrado")
         print("Encerrando...")
-        sleep(2.5)
+        sleep(1)
         exit()
     
-    elif len(lista_caminho) > 1:
-        for arquivo in lista_caminho:
+    #Se mais de um arquivo, trata cada arquivo da lista
+    elif len(lista_arquivos) > 1:
+        print ("Foram selecionados:", len(lista_arquivos), "arquivos.")
+        #Tratando multiplos arquivos
+        for arquivo in lista_arquivos:
             print("Tratando aquivo:", arquivo)
             sleep(0.5)
 
-            #Separa o caminho e a extensao do arquivo em duas variaveis
-            caminho_img, exten_img = os.path.splitext(arquivo)
-            #print(caminho_img)
-            #print(exten_img)
+            #-----Trata se o arquivo enviado é uma imagem, se sim, o abre, se não, pula para o próximo item da lista
+            try:
+                img_import = Image.open(arquivo)
+                img_import.verify()
+                img_import = Image.open(arquivo)
+            except:
+                print("Arquivo invalido.")
+                continue
+            
+            #img_import = Image.open(arquivo)
 
-            #Abre a imagem
-            img_import = Image.open(caminho_img + exten_img)
-
-            #Trata a imagem
+            #-----Trata a imagem
             imagem_tratada = trataImagem(img_import)
 
-            #Salva a imagem
-            imagem_tratada.save(caminho_img + "_noBars" + exten_img)
-            print("Finalizado")
+            #-----Cria novo diretorio onde irão as imagens, extrai o nome e a extensao dos arquivos originais
+            novo_caminho, nome_arq, ext_arq = manipulaArq(arquivo)
+
+            #-----Salva a imagem
+            imagem_tratada.save(novo_caminho + nome_arq + ext_arq)
+            print("Arquivo processado.")
             
     else:
-        print("Tratando aquivo:", lista_caminho)
-        #Separa o caminho e a extensao do arquivo em duas variaveis
-        caminho_img, exten_img = os.path.splitext(lista_caminho[0])
-        #print(caminho_img)
-        #print(exten_img)
+        print("Tratando aquivo:", lista_arquivos[0])
 
-        #Abre a imagem
-        img_import = Image.open(caminho_img + exten_img)
+        #-----Abre a imagem
+        img_import = Image.open(lista_arquivos[0])
 
-        #Trata a imagem
+        #-----Trata a imagem
         imagem_tratada = trataImagem(img_import)
 
-        #Salva a imagem no caminho passado pelo usuario utilizando a caixa de dialogo do easygui
-        imagem_tratada.save(easygui.filesavebox(default=caminho_img + "_noBars" + exten_img))
-#        imagem_tratada.save(caminho_img + "_noBars" + exten_img)
+        #-----Cria novo diretorio onde irá a imagem tratada, extrai o nome e a extensao do arquivo original
+        novo_caminho, nome_arq, ext_arq = manipulaArq(lista_arquivos[0])
+
+        #-----Salva a imagem no novo caminho, com a 
+        imagem_tratada.save(novo_caminho + nome_arq + ext_arq)
         
-        print("Finalizado")
+        print("Arquivo processado.")
 
 if __name__ == "__main__":
     main()
