@@ -6,7 +6,7 @@ from PIL import Image
 import easygui
 #os para faciliar o tratamento de paths e extensoes
 import os
-
+#Importa a funcao de sleep para controlar o tempo que as mensagens ficam em exibicao
 from time import sleep
 
 #Funcao que pega o caminho da imagem que sera tratada e separa a extensao do arquivo
@@ -22,13 +22,13 @@ def pegaCaminho():
 
 #Funcao de tratamento da imagem
 def trataImagem(imagem_tratamento):
-    #Pega o tamanho da imagem como uma tupla e o separa em duas variaveis
+    #Pega as dimensões da imagem como uma tupla e separa em duas variaveis
     img_X_total, img_Y_total = imagem_tratamento.size
 
     #Define tupla com posição do primeiro pixel
     prim_pixel = (0,0)
 
-    #Pega o valor da cor do pixel em RGB na posição 0,0
+    #Pega o valor da cor do pixel em RGB(R, G, B) na posição 0,0
     pix_ini = imagem_tratamento.getpixel(prim_pixel)
     pix_atual = imagem_tratamento.getpixel(prim_pixel)
 
@@ -38,25 +38,25 @@ def trataImagem(imagem_tratamento):
 
     #Loop para iterar sobre os pixels da imagem
     while pix_atual == pix_ini:
-        #Contador que define a posição do pixel X na horizontal
+        #Contador que define a posição do pixel X, na horizontal
         pix_X += 1
         #print(pix_X)
 
-        #Usa a função de montar tupla para definir as coordenadas
+        #Usa a função de montar tupla para definir as coordenadas na primeira linha de pixels da imagem
         coordenadas = (pix_X,0)
         #print(coordenadas)
 
-        #Pega o valor RGB da coordenada passada que será comparada com o valor do pixel 0,0
+        #Pega o valor RGB da coordenada passada que será comparada com o valor RGB do pixel 0,0
         pix_atual = imagem_tratamento.getpixel(coordenadas)
         #print(pix_atual)
 
-    #Define as variaveis que serão usadas na área do corte
+    #Define as variaveis que serão usadas na área do corte da imagem
     pos_esq_corte = pix_X
     pos_cima_corte = 0
     pos_dir_corte = img_X_total - pos_esq_corte
     pos_baixo_corte = img_Y_total
 
-    #Cria tupla para área
+    #Cria tupla para área do corte
     area_corte = (pos_esq_corte, pos_cima_corte, pos_dir_corte, pos_baixo_corte)
 
     img_cortada = imagem_tratamento.crop(area_corte)
@@ -69,7 +69,9 @@ def manipulaArq(caminho):
     #Pega o nome do diretorio
     nome_dir = os.path.dirname(caminho)
 
+    #Extrai somento o nome do arquivo com extensão
     arquivo_completo = os.path.basename(caminho)
+    #Separa o nome do arquivo da extensão
     nome_arquivo, extensao = os.path.splitext(arquivo_completo)
 
     #Cria caminho com o final \No_bars
@@ -77,12 +79,12 @@ def manipulaArq(caminho):
     #print(novo_path)
 
     #Verifica a existencia do novo caminho
-    check_existe = os.path.exists(novo_path)
-    #print(check_existe)
+    check_dir = os.path.exists(novo_path)
+    #print(check_dir)
 
     #Trata a existencia do novo caminho
     #Se não existir cria o diretorio e retorna o caminho
-    if check_existe == False:
+    if check_dir == False:
         os.mkdir(novo_path)
         return novo_path, nome_arquivo, extensao
     #Se existir só retorna o caminho
@@ -92,13 +94,15 @@ def manipulaArq(caminho):
 #Funcao principal
 def main():
     #-----Importa uma imagem
+    print("Selecione o/os arquivo/os que será/serão tratado/os.")
+    sleep(0.5)
     lista_arquivos = pegaCaminho()
     #print(caminho_img, exten_img)
 
     #-----Condicionamento dependendo da quantidade de arquivos na lista
     #Se nenhum arquivo, fecha o programa
     if lista_arquivos == None:
-        print("Nenhum arquivo encontrado")
+        print("Nenhum arquivo selecionado.")
         print("Encerrando programa...")
         sleep(1)
         exit()
@@ -114,14 +118,15 @@ def main():
 
             #-----Trata se o arquivo enviado é uma imagem, se sim, o abre, se não, pula para o próximo item da lista
             try:
+                #Abre imagem
                 img_import = Image.open(arquivo)
+                #Verifica se é uma imagem
                 img_import.verify()
+                #Abre novamente a imagem
                 img_import = Image.open(arquivo)
             except:
                 print("Arquivo invalido.")
                 continue
-            
-            #img_import = Image.open(arquivo)
 
             #-----Trata a imagem
             imagem_tratada = trataImagem(img_import)
@@ -132,6 +137,7 @@ def main():
             #-----Salva a imagem
             imagem_tratada.save(novo_caminho + nome_arq + ext_arq)
             print("Arquivo processado.")
+            sleep(0.5)
 
     #-----Tratamento para apenas um arquivo
     else:
@@ -159,6 +165,9 @@ def main():
         imagem_tratada.save(novo_caminho + nome_arq + ext_arq)
         
         print("Arquivo processado.")
+        sleep(0.5)
+        print("Encerrando programa.")
+        sleep(1)
 
 if __name__ == "__main__":
     main()
