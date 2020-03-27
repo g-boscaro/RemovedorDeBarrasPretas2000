@@ -14,7 +14,7 @@ Pegar os tamanhos horizontais e verticais da imagem
 Subtrair o valor de cont_pixels do tamanho horizontal
 Começar o crop da imagem a partir do valor da subtração
 
--------------------- Interface --------------------
+-------------------- Interface (?) --------------------
 -Usar a biblioteca TKinter
 -Criar um botão que abra a janela de seleção de arquivo
 -Pegar o caminho do arquivo que será alterado
